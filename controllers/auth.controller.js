@@ -1,4 +1,4 @@
-import express from 'express';
+
 import User from '../models/user.model.js'; // Import the User model
 import jwt from 'jsonwebtoken'; // Import the jsonwebtoken library
 import {redis} from "../lib/redis.js"
