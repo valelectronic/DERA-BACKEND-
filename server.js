@@ -20,9 +20,10 @@ app.use(cookieParser())
 
 
 app.use(cors({
-  origin: ["https://dera-frontend.vercel.app"],
-  credentials: true
+  origin: ["http://localhost:5173", "https://dera-frontend.vercel.app"],
+  credentials: true,
 }));
+
 //routes
 app.use("/api/auth",authRoutes)
 app.use("/api/product",productRoutes)
