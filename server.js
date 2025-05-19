@@ -8,6 +8,7 @@ import paymentRoutes from './routes/payment.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import { connectDB } from './lib/db.js';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
  
 dotenv.config();
 const app = express();
@@ -16,7 +17,12 @@ const port = process.env.PORT || 3000;
 //middlewares 
 app.use(express.json());
 app.use(cookieParser())
- 
+
+
+app.use(cors({
+  origin: ["https://dera-frontend.vercel.app"],
+  credentials: true
+}));
 //routes
 app.use("/api/auth",authRoutes)
 app.use("/api/product",productRoutes)
