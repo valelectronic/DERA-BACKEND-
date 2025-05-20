@@ -185,18 +185,9 @@ export const refreshToken = async (req, res) => {
 
 
 export const profile = async(req, res) => {
-    try {
-        const userId = req.userId; // Assuming you have middleware to set req.userId
-
-        const user = await User.findById(userId).select("-password"); // Exclude password from the response
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        res.json(user);
-    } catch (error) {
-        console.log("Error in profile controller", error.message);
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
+   try {
+		res.json(req.user);
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
 };
