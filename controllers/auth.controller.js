@@ -27,13 +27,13 @@ const setCookies = (res, accessToken, refreshToken) => {
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true, //prevents client-side JavaScript from accessing the cookie
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict", // helps prevent CSRF attacks
+        sameSite: "lax", // helps prevent CSRF attacks
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 15 * 60 * 1000, // 15 minutes
     });
 }
