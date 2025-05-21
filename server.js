@@ -35,6 +35,10 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
+app.get("/", (req, res) => {
+  res.send(" SOPHY E-SHOP API is running!..........");
+});
+
 
 
 
