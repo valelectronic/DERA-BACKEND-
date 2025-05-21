@@ -26,14 +26,14 @@ const setCookies = (res, accessToken, refreshToken) => {
     // Set the refresh token in an HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true, //prevents client-side JavaScript from accessing the cookie
-        secure: process.env.NODE_ENV === "production",
+        secure: true, // ensures the cookie is only sent over HTTPS
         sameSite: "none", // helps prevent CSRF attacks
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         path: "/" // Set the path to the root of the domain
     });
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "none",
         maxAge: 15 * 60 * 1000,
         path: "/" // 15 minutes
