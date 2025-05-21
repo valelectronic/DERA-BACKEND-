@@ -29,12 +29,14 @@ const setCookies = (res, accessToken, refreshToken) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax", // helps prevent CSRF attacks
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        path: "/" // Set the path to the root of the domain
     });
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        maxAge: 15 * 60 * 1000,
+        path: "/" // 15 minutes
     });
 }
 
