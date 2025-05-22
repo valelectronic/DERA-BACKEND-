@@ -6,7 +6,7 @@ import {getAllProducts,
      createProduct,
      deleteProduct,
     toggleFeaturedProduct,
-editProduct} from '../controllers/product.controller.js';
+editProduct, getProductById} from '../controllers/product.controller.js';
 import { protectRoute,adminRoute } from '../middleware/auth.middleware.js';
 
 
@@ -20,6 +20,8 @@ router.post("/", protectRoute, adminRoute, createProduct); // Get featured produ
 router.delete("/:id", protectRoute, adminRoute, deleteProduct); // delete product by ID
 router.get("/recommendation", getRecommendedProducts); // Get recommended products
 router.put("/:id", editProduct); // edit product by ID
+
+router.get('/:id', getProductById);
 
 export default router;
 

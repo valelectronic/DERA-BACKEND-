@@ -196,7 +196,7 @@ async function updateFeaturedProductsCache() {
 export const editProduct = async (req, res)=>{
 	try {
 		const {id} = req.params;
-		const {name, price, description, image, category} = req.body; // Destructure the request body
+		const {name, price, description, image, category,stock} = req.body; // Destructure the request body
 		
 		//fetch the existing product from the database
 		const product = await Product.findById(id);
@@ -228,12 +228,17 @@ export const editProduct = async (req, res)=>{
 		product.price = price || product.price; // Update the product price if provided, otherwise keep the existing price	
 		product.description = description || product.description; // Update the product description if provided, otherwise keep the existing description
 		product.category = category || product.category; // Update the product category if provided, otherwise keep the existing category
+		product.stock = stock ?? product.stock; // Update the product stock if provided, otherwise keep the existing stock
+	
 
 		const updatedProduct = await product.save(); // Save the updated product to the database
+
+
 
 		//if the product is featured, update the cache
 		await updateFeaturedProductsCache(); // Update the featured products cache in Redis
 		res.json({ message: "Product updated successfully", product: updatedProduct }); // Send the updated product as a response
+
 
 	} catch (error) {
 		console.log("Error in editProduct controller", error.message); // Log the error message
@@ -241,3 +246,18 @@ export const editProduct = async (req, res)=>{
 		
 	}
 }
+// Function to get a product by ID
+// This function is called to get a specific product from the database
+export const getProductById = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const product = await Product.findById(id);
+		if (!product) {
+			return res.status(404).json({ message: "Product not found" });
+		}
+		res.json(product);
+	} catch (error) {
+		console.log("Error in getProductById:", error.message);
+		res.status(500).json({ message: "Server error" });
+	}
+};
