@@ -48,7 +48,10 @@ export const removeAllFromCart = async(req,res)=>{
 		if (!productId) {
 			user.cartItems = [];
 		} else {
-			user.cartItems = user.cartItems.filter((item) => item.id !== productId);
+			user.cartItems = user.cartItems.filter(
+  (item) => item.product.toString() !== productId
+);
+
 		}
 		await user.save();
 		res.json(user.cartItems);
@@ -70,7 +73,10 @@ export const updateQuantity = async(req, res) =>{
 
 		if (existingItem) {
 			if (quantity === 0) {
-				user.cartItems = user.cartItems.filter((item) => item.id !== productId);
+							const existingItem = user.cartItems.find(
+			(item) => item.product.toString() === productId
+			);
+
 				await user.save();
 				return res.json(user.cartItems);
 			}
@@ -87,19 +93,23 @@ export const updateQuantity = async(req, res) =>{
 	}
 }
 
-export const getCartProducts = async(req, res) =>{
-	try {
-		const products = await Product.find({ _id: { $in: req.user.cartItems } });
+export const getCartProducts = async (req, res) => {
+  try {
+    const user = req.user;
 
-		// add quantity for each product
-		const cartItems = products.map((product) => {
-			const item = req.user.cartItems.find((cartItem) => cartItem.id === product.id);
-			return { ...product.toJSON(), quantity: item.quantity };
-		});
+    const productIds = user.cartItems.map((item) => item.product);
+    const products = await Product.find({ _id: { $in: productIds } });
 
-		res.json(cartItems);
-	} catch (error) {
-		console.log("Error in getCartProducts controller", error.message);
-		res.status(500).json({ message: "Server error", error: error.message });
-	}
-}
+    const cartItems = products.map((product) => {
+      const cartItem = user.cartItems.find(
+        (item) => item.product.toString() === product._id.toString()
+      );
+      return { ...product.toJSON(), quantity: cartItem.quantity };
+    });
+
+    res.json(cartItems);
+  } catch (error) {
+    console.log("Error in getCartProducts controller", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
