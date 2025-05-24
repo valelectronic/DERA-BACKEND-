@@ -7,6 +7,9 @@ import axios from 'axios';
 dotenv.config();
 
 export const payStackWebhook = async (req, res) => {
+        console.log("req.user", req.user);
+console.log("products", products);
+console.log("couponCode", couponCode);
   try {
     const payStackSignature = req.headers['x-payStack-signature'];
     const eventBody = JSON.stringify(req.body);
@@ -60,6 +63,8 @@ export const payStackWebhook = async (req, res) => {
 };
 
 export const createCheckoutSession = async (req, res) => {
+    console.log("Authenticated user:", req.user.email);
+
     try {
         const { products, couponCode } = req.body;
 

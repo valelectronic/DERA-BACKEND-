@@ -42,6 +42,7 @@ const orderSchema = new mongoose.Schema(
     paymentReference: {
       type: String,
       unique: true,
+      sparse: true,
     },
 	paymentResult: {
 		status: {
@@ -50,11 +51,11 @@ const orderSchema = new mongoose.Schema(
 		},
 		email: {
 		  type: String,
-		  required: true,
+		  
 		},
 		amount: {
 		  type: Number,
-		  required: true,
+		  
 		  min: 0,
 		},
 		transactionId: { // To track the Paystack or other gateway transaction ID
