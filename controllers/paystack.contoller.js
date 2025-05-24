@@ -63,14 +63,23 @@ console.log("couponCode", couponCode);
 };
 
 export const createCheckoutSession = async (req, res) => {
-    console.log("Authenticated user:", req.user.email);
+  
 
     try {
-        const { products, couponCode } = req.body;
+    const { products, couponCode, customerDetails } = req.body;
+    console.log("Received customerDetails:", customerDetails);
+
+
+if (!customerDetails || !customerDetails.fullName || !customerDetails.email || !customerDetails.phone || !customerDetails.address) {
+  return res.status(400).json({ error: "Missing customer details" });
+}
+
 
         if (!Array.isArray(products) || products.length === 0) {
             return res.status(400).json({ error: "Invalid or empty products array" });
         }
+        console.error("Error processing checkout:", error);
+
 
         let totalAmount = 0;
 
@@ -102,22 +111,25 @@ export const createCheckoutSession = async (req, res) => {
 
         // Paystack checkout creation
         const paystackData = {
-            email: req.user.email, // Customer email
-            amount: totalAmount, // Total amount after coupon (in kobo)
-            reference: `order_${new Date().getTime()}`, // Unique reference for the transaction
-            callback_url: `${process.env.CLIENT_URL}/purchase-success`, // URL where Paystack will send the user after payment
+            email: req.user.email,
+            amount: totalAmount,
+            reference: `order_${Date.now()}`,
+            callback_url: `${process.env.CLIENT_URL}/purchase-success`,
             metadata: {
-                userId: req.user._id.toString(),
-                couponCode: couponCode || "",
-                products: JSON.stringify(
-                    products.map((p) => ({
-                        id: p._id,
-                        quantity: p.quantity,
-                        price: p.price,
-                    }))
-                ),
+            userId: req.user._id.toString(),
+            fullName: customerDetails?.fullName || "",
+            phone: customerDetails?.phone || "",
+            address: customerDetails?.address || "",
+            couponCode: couponCode || "",
+            products: products.map(p => ({
+                id: p._id,
+                quantity: p.quantity,
+                price: p.price,
+            })),
             },
-        };
+
+            };
+
 
         // Send request to Paystack API to create a payment page
         const paystackResponse = await axios.post(
@@ -133,15 +145,20 @@ export const createCheckoutSession = async (req, res) => {
         const paymentLink = paystackResponse.data.data.authorization_url;
 
         // After successful checkout, create the order
-        const newOrder = new Order({
-            user: req.user._id,
-            products: products.map((product) => ({
-                product: product._id,
-                quantity: product.quantity,
-                price: product.price,
-            })),
-            totalAmount: totalAmount / 100, // Convert back to Naira
-            paystackReference: paystackResponse.data.data.reference,
+       const newOrder = new Order({
+        user: req.user._id,
+        customerDetails: {
+            fullName: customerDetails?.fullName || "",
+            phone: customerDetails?.phone || "",
+            address: customerDetails?.address || "",
+        },
+        products: products.map((product) => ({
+            product: product._id,
+            quantity: product.quantity,
+            price: product.price,
+        })),
+        totalAmount: totalAmount / 100,
+        paystackReference: paystackResponse.data.data.reference,
         });
 
         await newOrder.save();
@@ -149,7 +166,6 @@ export const createCheckoutSession = async (req, res) => {
         res.status(200).json({ paymentLink }); // Return the Paystack payment link to the frontend
 
     } catch (error) {
-        console.error("Error processing checkout:", error);
         res.status(500).json({ message: "Error processing checkout", error: error.message });
     }
 };

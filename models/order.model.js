@@ -47,7 +47,8 @@ const orderSchema = new mongoose.Schema(
 	paymentResult: {
 		status: {
 		  type: String,
-		  enum: ['success', 'failure'],
+		  enum: ['success', 'failure', 'pending'],
+      default: 'pending',
 		},
 		email: {
 		  type: String,
@@ -72,6 +73,13 @@ const orderSchema = new mongoose.Schema(
 			enum: ['pending', 'processing', 'completed', 'shipped', 'cancelled'],
 			default: 'pending',
 		  },
+      customerDetails: {
+  fullName: { type: String },
+  phone: { type: String },
+  address: { type: String },
+  email: { type: String },
+},
+
   },
   { timestamps: true }
 );

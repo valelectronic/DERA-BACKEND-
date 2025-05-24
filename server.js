@@ -30,6 +30,8 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
+
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
