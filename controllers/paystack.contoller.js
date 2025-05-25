@@ -117,6 +117,20 @@ export const createCheckoutSession = async (req, res) => {
         console.error("Coupon error:", couponError);
       }
     }
+// Check for existing unpaid order
+const existingOrder = await Order.findOne({
+  user: req.user._id,
+  "customerDetails.email": customerDetails.email,
+  isPaid: false,
+  "products.product": { $in: products.map(p => p._id) },
+  totalAmount: totalAmount / 100,
+});
+
+if (existingOrder) {
+  return res.status(409).json({
+    error: "A similar unpaid order already exists. Please complete your payment.",
+  });
+}
 
     const generatedReference = `order_${Date.now()}`;
 
