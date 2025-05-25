@@ -9,7 +9,6 @@ import analyticsRoutes from './routes/analytics.routes.js';
 import { connectDB } from './lib/db.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import verifyPaymentRoutes from './routes/verifyPayment.routes.js';
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
@@ -29,7 +28,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/analytics", analyticsRoutes);
-app.use("/api/verifyPayment", verifyPaymentRoutes);
+
 
 
 

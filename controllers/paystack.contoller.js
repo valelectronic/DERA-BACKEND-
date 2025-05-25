@@ -138,7 +138,8 @@ if (existingOrder) {
       email: req.user.email,
       amount: totalAmount,
       reference: generatedReference,
-      callback_url: `${process.env.CLIENT_URL}/purchase-success`,
+      callback_url: `${process.env.CLIENT_URL}/purchase-success?sessionId=${generatedReference}`,
+      currency: "NGN",
       metadata: {
         userId: req.user._id.toString(),
         fullName: customerDetails.fullName,
@@ -173,20 +174,28 @@ if (existingOrder) {
     }
 
     const newOrder = new Order({
-      user: req.user._id,
-      customerDetails: {
-        fullName: customerDetails.fullName,
-        phone: customerDetails.phone,
-        address: customerDetails.address,
-      },
-      products: products.map((product) => ({
-        product: product._id,
-        quantity: product.quantity,
-        price: product.price,
-      })),
-      totalAmount: totalAmount / 100,
-      paystackReference: generatedReference,
-    });
+  user: req.user._id,
+  customerDetails: {
+    fullName: customerDetails.fullName,
+    phone: customerDetails.phone,
+    address: customerDetails.address,
+  },
+  products: products.map((product) => ({
+    product: product._id,
+    quantity: product.quantity,
+    price: product.price,
+  })),
+  totalAmount: totalAmount / 100,
+  paystackReference: generatedReference,
+
+  // 🛠️ Save coupon details here
+  coupon: coupon ? {
+    code: coupon.code,
+    discountPercentage: coupon.discountPercentage,
+    _id: coupon._id,
+  } : null,
+});
+
 
     await newOrder.save();
 
