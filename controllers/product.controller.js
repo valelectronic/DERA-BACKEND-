@@ -22,28 +22,31 @@ export const getAllProducts = async (req, res) => {
 // It first checks if the featured products are cached in Redis, if not, it fetches them from MongoDB and caches them
 export const getFeaturedProducts = async (req, res) => {
 	try {
-		let featuredProducts = await redis.get("featuredProducts"); // Check if featured products are cached
-
-		if(featuredProducts) {
-			featuredProducts = JSON.parse(featuredProducts); // Parse the cached data
+		let featuredProducts = await redis.get("featured_products");
+		if (featuredProducts) {
+			return res.json(JSON.parse(featuredProducts));
 		}
 
 		// if not in redis, fetch from mongodb
-		// .lean is used to get a plain javascript object instead of a mongoose document
+		// .lean() is gonna return a plain javascript object instead of a mongodb document
+		// which is good for performance
 		featuredProducts = await Product.find({ isFeatured: true }).lean();
-		if(!featuredProducts) {
+
+		if (!featuredProducts) {
 			return res.status(404).json({ message: "No featured products found" });
 		}
 
 		// store in redis for future quick access
-		await redis.set("featuredProducts", JSON.stringify(featuredProducts), "EX", 60 * 60); // Cache for 1 hour
 
+		await redis.set("featured_products", JSON.stringify(featuredProducts));
 
+		res.json(featuredProducts);
 	} catch (error) {
 		console.log("Error in getFeaturedProducts controller", error.message);
 		res.status(500).json({ message: "Server error", error: error.message });
 	}
-}
+};
+
 
 
 //for creating a new product and uploading image to cloudinary
